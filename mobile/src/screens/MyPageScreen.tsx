@@ -76,6 +76,15 @@ export default function MyPageScreen({ navigation }: any) {
         </TouchableOpacity>
       </View>
 
+      {/* Quick Actions */}
+      <TouchableOpacity
+        style={styles.uploadButton}
+        onPress={() => navigation.navigate('Upload')}
+      >
+        <Ionicons name="cloud-upload" size={24} color="#fff" />
+        <Text style={styles.uploadButtonText}>파일 업로드</Text>
+      </TouchableOpacity>
+
       {/* Menu Items */}
       <View style={styles.menuSection}>
         <Text style={styles.sectionTitle}>내 활동</Text>
@@ -263,6 +272,22 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   chargeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  uploadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#10b981',
+    marginHorizontal: 15,
+    marginBottom: 15,
+    paddingVertical: 15,
+    borderRadius: 8,
+    gap: 8,
+  },
+  uploadButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',

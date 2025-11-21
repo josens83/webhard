@@ -13,6 +13,7 @@ import FileDetailScreen from '../screens/FileDetailScreen';
 import MyPageScreen from '../screens/MyPageScreen';
 import ChargeScreen from '../screens/ChargeScreen';
 import SearchScreen from '../screens/SearchScreen';
+import UploadScreen from '../screens/UploadScreen';
 
 import { useAuthStore } from '../store/authStore';
 
@@ -109,6 +110,11 @@ export default function Navigation() {
               name="Charge"
               component={ChargeScreen}
               options={{ title: '캐시 충전' }}
+            />
+            <Stack.Screen
+              name="Upload"
+              component={UploadScreen}
+              options={{ headerShown: false }}
             />
           </>
         )}

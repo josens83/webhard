@@ -48,15 +48,27 @@ export const filesApi = {
     return response.data;
   },
 
+  searchFiles: async (params?: any) => {
+    const response = await apiClient.get('/files/search', { params });
+    return response.data;
+  },
+
+  uploadFile: async (formData: FormData) => {
+    const response = await apiClient.post('/files/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
   downloadFile: async (id: string) => {
     const response = await apiClient.post(`/files/${id}/download`);
     return response.data;
   },
 
-  purchaseFile: async (id: string, paymentMethod: string) => {
-    const response = await apiClient.post(`/files/${id}/purchase`, {
-      paymentMethod,
-    });
+  purchaseFile: async (id: string) => {
+    const response = await apiClient.post(`/files/${id}/purchase`);
     return response.data;
   },
 
@@ -64,9 +76,26 @@ export const filesApi = {
     const response = await apiClient.post(`/files/${id}/favorite`);
     return response.data;
   },
+
+  rateFile: async (id: string, rating: number) => {
+    const response = await apiClient.post(`/files/${id}/rate`, { rating });
+    return response.data;
+  },
+};
+
+export const categoriesApi = {
+  getCategories: async () => {
+    const response = await apiClient.get('/categories');
+    return response.data;
+  },
 };
 
 export const paymentApi = {
+  requestPayment: async (data: { amount: number; method: string }) => {
+    const response = await apiClient.post('/payments/request', data);
+    return response.data;
+  },
+
   chargeCash: async (amount: number, paymentMethod: string) => {
     const response = await apiClient.post('/payments/charge', {
       amount,
@@ -84,6 +113,16 @@ export const paymentApi = {
 export const userApi = {
   getMyFiles: async (params?: any) => {
     const response = await apiClient.get('/users/my-files', { params });
+    return response.data;
+  },
+
+  getPurchases: async (params?: any) => {
+    const response = await apiClient.get('/users/purchases', { params });
+    return response.data;
+  },
+
+  getTransactions: async (params?: any) => {
+    const response = await apiClient.get('/users/transactions', { params });
     return response.data;
   },
 
