@@ -50,14 +50,55 @@ self.addEventListener('activate', (event) => {
 
 // Push notification
 self.addEventListener('push', (event) => {
-  const data = event.data.json();
+  const data = event.data ? event.data.json() : {};
+  const title = data.title || 'WeDisk 알림';
   const options = {
-    body: data.body,
+    body: data.body || '새로운 알림이 있습니다.',
     icon: '/icon-192x192.png',
     badge: '/badge-72x72.png',
+    data: data.url || '/',
+    vibrate: [200, 100, 200],
+    tag: data.tag || 'wedisk-notification',
+    requireInteraction: true,
+    actions: data.actions || [],
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title, options)
+    self.registration.showNotification(title, options)
   );
 });
+
+// Notification click event
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action) {
+    // Handle notification action buttons
+    clients.openWindow(event.action);
+  } else {
+    // Open the notification URL
+    event.waitUntil(
+      clients.openWindow(event.notification.data || '/')
+    );
+  }
+});
+
+// Background sync for offline support
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-data') {
+    event.waitUntil(syncData());
+  }
+});
+
+async function syncData() {
+  console.log('Syncing data in background...');
+}
+
+// Message handling from main thread
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+console.log('WeDisk Service Worker v1.0 loaded');
