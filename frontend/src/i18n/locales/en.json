@@ -1,0 +1,52 @@
+{
+  "common": {
+    "home": "Home",
+    "files": "Files",
+    "search": "Search",
+    "mypage": "My Page",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "upload": "Upload",
+    "download": "Download",
+    "purchase": "Purchase",
+    "free": "Free",
+    "price": "Price",
+    "category": "Category",
+    "tags": "Tags",
+    "description": "Description",
+    "title": "Title",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm"
+  },
+  "auth": {
+    "emailOrUsername": "Email or Username",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "displayName": "Display Name",
+    "loginSuccess": "Login successful",
+    "loginFailed": "Login failed",
+    "registerSuccess": "Registration successful",
+    "registerFailed": "Registration failed"
+  },
+  "file": {
+    "uploadFile": "Upload File",
+    "downloadFile": "Download File",
+    "uploadSuccess": "Upload successful",
+    "uploadFailed": "Upload failed",
+    "downloadCount": "Downloads",
+    "viewCount": "Views",
+    "rating": "Rating"
+  },
+  "payment": {
+    "cash": "Cash",
+    "point": "Point",
+    "charge": "Charge",
+    "chargeSuccess": "Charge successful",
+    "chargeFailed": "Charge failed",
+    "paymentMethod": "Payment Method"
+  }
+}
