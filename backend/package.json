@@ -1,7 +1,7 @@
 {
-  "name": "wedisk-backend",
-  "version": "1.0.0",
-  "description": "WeDisk Clone Backend API",
+  "name": "eduvault-backend",
+  "version": "2.0.0",
+  "description": "EduVault Educational Platform Backend API",
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
@@ -17,11 +17,15 @@
     "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [
-    "webhard",
-    "file-sharing",
+    "education",
+    "elearning",
+    "lms",
+    "educational-platform",
     "nodejs",
     "express",
-    "typescript"
+    "typescript",
+    "blockchain",
+    "ai-learning"
   ],
   "author": "",
   "license": "MIT",
@@ -61,7 +65,23 @@
     "speakeasy": "^2.0.0",
     "qrcode": "^1.5.3",
     "i18next": "^23.7.6",
-    "i18next-http-middleware": "^3.5.0"
+    "i18next-http-middleware": "^3.5.0",
+    "openai": "^4.20.1",
+    "ethers": "^6.9.0",
+    "ipfs-http-client": "^60.0.1",
+    "pdfkit": "^0.14.0",
+    "puppeteer": "^21.6.1",
+    "canvas": "^2.11.2",
+    "ffmpeg-static": "^5.2.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "jimp": "^0.22.10",
+    "node-nlp": "^4.27.0",
+    "pdf-parse": "^1.1.1",
+    "mammoth": "^1.6.0",
+    "xlsx": "^0.18.5",
+    "cheerio": "^1.0.0-rc.12",
+    "cron": "^3.1.6",
+    "agenda": "^5.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -83,6 +103,9 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
     "@types/uuid": "^9.0.7",
+    "@types/pdfkit": "^0.13.4",
+    "@types/fluent-ffmpeg": "^2.1.24",
+    "@types/pdf-parse": "^1.1.4",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "eslint": "^8.56.0",
