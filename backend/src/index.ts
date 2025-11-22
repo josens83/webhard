@@ -21,6 +21,12 @@ import paymentRoutes from './routes/payment.routes';
 import commentRoutes from './routes/comment.routes';
 import adminRoutes from './routes/admin.routes';
 
+// Educational Platform Routes
+import courseRoutes from './routes/course.routes';
+import aiLearningRoutes from './routes/ai-learning.routes';
+import certificateRoutes from './routes/certificate.routes';
+import copyrightRoutes from './routes/copyright.routes';
+
 dotenv.config();
 
 const app: Application = express();
@@ -31,14 +37,18 @@ const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'WeDisk Clone API',
-      version: '1.0.0',
-      description: '웹하드 서비스 API 문서',
+      title: 'EduVault API',
+      version: '2.0.0',
+      description: 'Educational Content Platform API - AI-powered learning, blockchain copyright, and course management',
     },
     servers: [
       {
         url: `http://localhost:${PORT}`,
         description: 'Development server',
+      },
+      {
+        url: 'https://api.eduvault.com',
+        description: 'Production server',
       },
     ],
     components: {
@@ -88,15 +98,29 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Educational Platform Routes
+app.use('/api/courses', courseRoutes);
+app.use('/api/ai-learning', aiLearningRoutes);
+app.use('/api/certificates', certificateRoutes);
+app.use('/api/copyright', copyrightRoutes);
+
 // Error handling
 app.use(notFoundHandler);
 app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-  console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
-  console.log(`🏥 Health check: http://localhost:${PORT}/health`);
+  console.log(`\n🎓 EduVault Educational Platform`);
+  console.log(`================================`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📚 API Docs: http://localhost:${PORT}/api-docs`);
+  console.log(`🏥 Health: http://localhost:${PORT}/health`);
+  console.log(`\n🎯 Educational Features:`);
+  console.log(`   📖 Courses: /api/courses`);
+  console.log(`   🤖 AI Learning: /api/ai-learning`);
+  console.log(`   🏆 Certificates: /api/certificates`);
+  console.log(`   🔐 Copyright: /api/copyright`);
+  console.log(`================================\n`);
 });
 
 export default app;
