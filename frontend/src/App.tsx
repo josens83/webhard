@@ -11,6 +11,11 @@ import ChargePage from './pages/ChargePage'
 import AdminPage from './pages/AdminPage'
 import ProtectedRoute from './components/ProtectedRoute'
 
+// Educational Platform Pages
+import OnboardingFlow from './pages/OnboardingFlow'
+import CoursesPage from './pages/CoursesPage'
+import StudentDashboard from './pages/StudentDashboard'
+
 function App() {
   return (
     <Routes>
@@ -20,6 +25,15 @@ function App() {
         <Route path="files/:id" element={<FileDetailPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
+        <Route path="onboarding" element={<OnboardingFlow />} />
+
+        {/* Educational Platform Routes */}
+        <Route path="courses" element={<CoursesPage />} />
+        <Route path="dashboard" element={
+          <ProtectedRoute>
+            <StudentDashboard />
+          </ProtectedRoute>
+        } />
 
         {/* Protected Routes */}
         <Route path="mypage" element={

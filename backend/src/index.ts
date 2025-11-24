@@ -12,6 +12,12 @@ import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFoundHandler';
 import { rateLimiter } from './middleware/rateLimiter';
 
+// World-class Optimization Services
+import { PerformanceMonitoringService, performanceMiddleware } from './services/performance-monitoring.service';
+import { AnalyticsService } from './services/analytics.service';
+import { ABTestingService, EduVaultExperiments } from './services/ab-testing.service';
+import { FreemiumOptimizationService } from './services/freemium-optimization.service';
+
 // Routes
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
@@ -27,10 +33,23 @@ import aiLearningRoutes from './routes/ai-learning.routes';
 import certificateRoutes from './routes/certificate.routes';
 import copyrightRoutes from './routes/copyright.routes';
 
+// World-class Optimization Routes
+import analyticsRoutes from './routes/analytics.routes';
+import abTestingRoutes from './routes/ab-testing.routes';
+
 dotenv.config();
 
 const app: Application = express();
 const PORT = process.env.PORT || 4000;
+
+// Initialize world-class optimization services
+const performanceMonitor = new PerformanceMonitoringService();
+const analyticsService = new AnalyticsService();
+const abTestingService = new ABTestingService();
+const freemiumService = new FreemiumOptimizationService();
+
+// Export for use in routes
+export { performanceMonitor, analyticsService, abTestingService, freemiumService, EduVaultExperiments };
 
 // Swagger 설정
 const swaggerOptions = {
@@ -78,6 +97,9 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 app.use(morgan('combined'));
 
+// Performance monitoring (Netflix/Linear-inspired)
+app.use(performanceMiddleware(performanceMonitor));
+
 // Rate limiting
 app.use('/api/', rateLimiter);
 
@@ -104,6 +126,10 @@ app.use('/api/ai-learning', aiLearningRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/copyright', copyrightRoutes);
 
+// World-class Optimization Routes
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/ab-testing', abTestingRoutes);
+
 // Error handling
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -120,6 +146,10 @@ app.listen(PORT, () => {
   console.log(`   🤖 AI Learning: /api/ai-learning`);
   console.log(`   🏆 Certificates: /api/certificates`);
   console.log(`   🔐 Copyright: /api/copyright`);
+  console.log(`\n⚡ World-class Optimizations:`);
+  console.log(`   📊 Analytics: /api/analytics`);
+  console.log(`   🧪 A/B Testing: /api/ab-testing`);
+  console.log(`   ⚡ Performance Monitoring: Active`);
   console.log(`================================\n`);
 });
 

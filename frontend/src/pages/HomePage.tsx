@@ -2,6 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { filesApi } from '../api/files';
 import { Link } from 'react-router-dom';
 import { Download, Eye, Star } from 'lucide-react';
+import {
+  PlatformStats,
+  TestimonialsCarousel,
+  TrustBadges,
+  LiveActivityNotification
+} from '../components/SocialProof';
 
 export default function HomePage() {
   const { data: popularFiles } = useQuery({
@@ -16,11 +22,34 @@ export default function HomePage() {
 
   return (
     <div className="space-y-8">
+      {/* Live Activity Notification (Booking.com-style) */}
+      <LiveActivityNotification />
+
       {/* Hero banner */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-white">
-        <h2 className="text-3xl font-bold mb-2">WeDisk에 오신 것을 환영합니다</h2>
-        <p className="text-lg">다양한 파일을 안전하고 빠르게 공유하세요</p>
+        <h2 className="text-3xl font-bold mb-2">EduVault에 오신 것을 환영합니다</h2>
+        <p className="text-lg">AI 기반 맞춤형 학습과 블록체인 저작권 보호로 안전하게 배우세요</p>
+        <div className="mt-4 flex gap-4">
+          <Link
+            to="/courses"
+            className="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
+          >
+            강좌 둘러보기
+          </Link>
+          <Link
+            to="/onboarding"
+            className="bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-800 transition border-2 border-white"
+          >
+            시작하기
+          </Link>
+        </div>
       </div>
+
+      {/* Platform Statistics (Netflix-style) */}
+      <PlatformStats />
+
+      {/* Trust Badges (Airbnb-style) */}
+      <TrustBadges />
 
       {/* Popular files */}
       <section>
@@ -106,6 +135,9 @@ export default function HomePage() {
           </table>
         </div>
       </section>
+
+      {/* Testimonials Carousel (Stripe-style) */}
+      <TestimonialsCarousel />
     </div>
   );
 }
