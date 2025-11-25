@@ -16,6 +16,9 @@ import OnboardingFlow from './pages/OnboardingFlow'
 import CoursesPage from './pages/CoursesPage'
 import StudentDashboard from './pages/StudentDashboard'
 
+// Chat Page
+import ChatPage from './pages/ChatPage'
+
 function App() {
   return (
     <Routes>
@@ -32,6 +35,13 @@ function App() {
         <Route path="dashboard" element={
           <ProtectedRoute>
             <StudentDashboard />
+          </ProtectedRoute>
+        } />
+
+        {/* Chat Route */}
+        <Route path="chat" element={
+          <ProtectedRoute>
+            <ChatPage />
           </ProtectedRoute>
         } />
 

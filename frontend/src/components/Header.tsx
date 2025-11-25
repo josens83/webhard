@@ -1,12 +1,26 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, User, LogOut, Settings, Upload, Wallet } from 'lucide-react';
+import { Search, User, LogOut, Settings, Upload, Wallet, MessageCircle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
-import { useState } from 'react';
+import { useChatStore } from '../store/chatStore';
+import { useState, useEffect } from 'react';
 
 export default function Header() {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated, logout, token } = useAuthStore();
+  const { totalUnreadCount, initSocket, reset: resetChat } = useChatStore();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Socket 초기화
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      initSocket(token);
+    }
+    return () => {
+      if (!isAuthenticated) {
+        resetChat();
+      }
+    };
+  }, [isAuthenticated, token, initSocket, resetChat]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,6 +121,19 @@ export default function Header() {
                   title="캐시충전"
                 >
                   <Wallet className="w-5 h-5" />
+                </button>
+                {/* 채팅 버튼 */}
+                <button
+                  onClick={() => navigate('/chat')}
+                  className="p-2 hover:bg-gray-100 rounded-lg relative"
+                  title="메시지"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  {totalUnreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
+                    </span>
+                  )}
                 </button>
                 {user.isSeller && (
                   <button

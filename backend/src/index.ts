@@ -37,6 +37,9 @@ import copyrightRoutes from './routes/copyright.routes';
 import analyticsRoutes from './routes/analytics.routes';
 import abTestingRoutes from './routes/ab-testing.routes';
 
+// Chat Routes
+import chatRoutes from './routes/chat.routes';
+
 dotenv.config();
 
 const app: Application = express();
@@ -130,6 +133,9 @@ app.use('/api/copyright', copyrightRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ab-testing', abTestingRoutes);
 
+// Chat Routes
+app.use('/api/chat', chatRoutes);
+
 // Error handling
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -150,6 +156,8 @@ app.listen(PORT, () => {
   console.log(`   📊 Analytics: /api/analytics`);
   console.log(`   🧪 A/B Testing: /api/ab-testing`);
   console.log(`   ⚡ Performance Monitoring: Active`);
+  console.log(`\n💬 Communication:`);
+  console.log(`   💬 Chat: /api/chat`);
   console.log(`================================\n`);
 });
 
