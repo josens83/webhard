@@ -27,7 +27,7 @@ TOSS_SECRET_KEY=live_sk_...
 #### Frontend (.env.production)
 ```bash
 VITE_API_URL=https://api.your-domain.com/api
-VITE_APP_NAME=WeDisk
+VITE_APP_NAME=EduVault
 ```
 
 ### 2. Docker 배포
@@ -132,11 +132,11 @@ npm install -g pm2
 
 # Start backend
 cd backend
-pm2 start npm --name "wedisk-backend" -- start
+pm2 start npm --name "eduvault-backend" -- start
 
 # Start frontend
 cd frontend
-pm2 start npm --name "wedisk-frontend" -- start
+pm2 start npm --name "eduvault-frontend" -- start
 
 # Save PM2 configuration
 pm2 save
@@ -152,8 +152,8 @@ pm2 startup
 pm2 monit
 
 # View logs
-pm2 logs wedisk-backend
-pm2 logs wedisk-frontend
+pm2 logs eduvault-backend
+pm2 logs eduvault-frontend
 
 # Check status
 pm2 status
@@ -253,7 +253,7 @@ Sentry.init({
 ```yaml
 # prometheus.yml
 scrape_configs:
-  - job_name: 'wedisk'
+  - job_name: 'eduvault'
     static_configs:
       - targets: ['localhost:4000']
 ```

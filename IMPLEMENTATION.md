@@ -1,8 +1,8 @@
-# WeDisk Clone - 구현 완료 문서
+# EduVault Clone - 구현 완료 문서
 
 ## 프로젝트 개요
 
-https://www.wedisk.co.kr/ 사이트를 완벽하게 클론한 풀스택 웹하드 서비스입니다.
+https://www.eduvault.co.kr/ 사이트를 완벽하게 클론한 풀스택 교육 플랫폼 서비스입니다.
 
 ## 구현된 주요 기능
 
@@ -60,7 +60,7 @@ https://www.wedisk.co.kr/ 사이트를 완벽하게 클론한 풀스택 웹하�
 - ✅ 신고 처리
 
 ### 8. UI/UX
-- ✅ WeDisk와 유사한 디자인
+- ✅ EduVault와 유사한 디자인
 - ✅ 반응형 디자인 (모바일 대응)
 - ✅ 카테고리 네비게이션
 - ✅ 검색 기능

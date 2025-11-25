@@ -4,8 +4,8 @@ import QRCode from 'qrcode';
 class TwoFactorService {
   generateSecret(username: string) {
     const secret = speakeasy.generateSecret({
-      name: `WeDisk (${username})`,
-      issuer: 'WeDisk',
+      name: `EduVault (${username})`,
+      issuer: 'EduVault',
       length: 32,
     });
 

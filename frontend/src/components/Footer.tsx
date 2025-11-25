@@ -4,9 +4,9 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-white font-bold mb-4">WeDisk</h3>
+            <h3 className="text-white font-bold mb-4">EduVault</h3>
             <p className="text-sm">
-              대한민국 최고의 웹하드 서비스
+              AI 기반 맞춤형 학습과 블록체인 저작권 보호
             </p>
           </div>
 
@@ -39,7 +39,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-700 text-center text-sm">
-          <p>&copy; 2024 WeDisk. All rights reserved.</p>
+          <p>&copy; 2024 EduVault. All rights reserved.</p>
         </div>
       </div>
     </footer>

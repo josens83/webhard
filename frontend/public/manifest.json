@@ -1,7 +1,7 @@
 {
-  "name": "WeDisk - 웹하드 서비스",
-  "short_name": "WeDisk",
-  "description": "완벽한 웹하드 파일 공유 서비스",
+  "name": "EduVault - AI 교육 플랫폼",
+  "short_name": "EduVault",
+  "description": "AI 기반 맞춤형 학습과 블록체인 저작권 보호",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

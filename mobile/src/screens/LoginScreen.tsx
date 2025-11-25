@@ -43,8 +43,8 @@ export default function LoginScreen({ navigation }: any) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.logoContainer}>
-        <Text style={styles.logo}>WeDisk</Text>
-        <Text style={styles.subtitle}>웹하드 서비스</Text>
+        <Text style={styles.logo}>EduVault</Text>
+        <Text style={styles.subtitle}>AI 교육 플랫폼</Text>
       </View>
 
       <View style={styles.formContainer}>

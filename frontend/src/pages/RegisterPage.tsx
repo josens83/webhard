@@ -51,7 +51,7 @@ export default function RegisterPage() {
         <div>
           <h2 className="text-center text-3xl font-bold">회원가입</h2>
           <p className="mt-2 text-center text-gray-600">
-            WeDisk에 가입하고 다양한 혜택을 누리세요
+            EduVault에 가입하고 다양한 혜택을 누리세요
           </p>
         </div>
 

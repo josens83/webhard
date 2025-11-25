@@ -202,8 +202,8 @@ export default function MyPageScreen({ navigation }: any) {
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>WeDisk v1.0.0</Text>
-        <Text style={styles.footerText}>© 2024 WeDisk. All rights reserved.</Text>
+        <Text style={styles.footerText}>EduVault v1.0.0</Text>
+        <Text style={styles.footerText}>© 2024 EduVault. All rights reserved.</Text>
       </View>
     </ScrollView>
   );

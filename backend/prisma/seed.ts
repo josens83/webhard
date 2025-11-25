@@ -31,7 +31,7 @@ async function main() {
 
   const adminUser = await prisma.user.create({
     data: {
-      email: 'admin@wedisk.com',
+      email: 'admin@eduvault.com',
       username: 'admin',
       password: hashedPassword,
       displayName: '관리자',
@@ -48,7 +48,7 @@ async function main() {
 
   const seller1 = await prisma.user.create({
     data: {
-      email: 'seller1@wedisk.com',
+      email: 'seller1@eduvault.com',
       username: 'seller1',
       password: hashedPassword,
       displayName: '인기판매자',
@@ -64,7 +64,7 @@ async function main() {
 
   const seller2 = await prisma.user.create({
     data: {
-      email: 'seller2@wedisk.com',
+      email: 'seller2@eduvault.com',
       username: 'seller2',
       password: hashedPassword,
       displayName: '신규판매자',
@@ -80,7 +80,7 @@ async function main() {
 
   const regularUser = await prisma.user.create({
     data: {
-      email: 'user@wedisk.com',
+      email: 'user@eduvault.com',
       username: 'testuser',
       password: hashedPassword,
       displayName: '일반사용자',
@@ -562,10 +562,10 @@ async function main() {
   console.log(`  - ${tags.length} tags`);
   console.log(`  - ${files.length} files`);
   console.log('\n🔑 Test accounts:');
-  console.log('  - Admin: admin@wedisk.com / password123');
-  console.log('  - Seller 1: seller1@wedisk.com / password123');
-  console.log('  - Seller 2: seller2@wedisk.com / password123');
-  console.log('  - User: user@wedisk.com / password123');
+  console.log('  - Admin: admin@eduvault.com / password123');
+  console.log('  - Seller 1: seller1@eduvault.com / password123');
+  console.log('  - Seller 2: seller2@eduvault.com / password123');
+  console.log('  - User: user@eduvault.com / password123');
 }
 
 main()

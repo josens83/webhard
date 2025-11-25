@@ -31,7 +31,7 @@ export default function LoginPage() {
         <div>
           <h2 className="text-center text-3xl font-bold">로그인</h2>
           <p className="mt-2 text-center text-gray-600">
-            WeDisk 계정으로 로그인하세요
+            EduVault 계정으로 로그인하세요
           </p>
         </div>
 

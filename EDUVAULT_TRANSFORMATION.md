@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the complete transformation of WeDisk from a file-sharing platform into **EduVault**, a world-class educational content marketplace with AI-powered learning features, blockchain copyright protection, and institutional-grade course management.
+This document describes the complete transformation of EduVault from a file-sharing platform into **EduVault**, a world-class educational content marketplace with AI-powered learning features, blockchain copyright protection, and institutional-grade course management.
 
 ## 🎯 Vision
 

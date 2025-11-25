@@ -1,4 +1,4 @@
-# WeDisk 아키텍처 문서
+# EduVault 아키텍처 문서
 
 ## 🏗️ 시스템 아키텍처
 
@@ -293,7 +293,7 @@ model File {
 
 **버킷 구조**:
 ```
-wedisk-files/
+eduvault-files/
 ├── uploads/              # 업로드된 파일
 │   ├── {year}/
 │   │   ├── {month}/
@@ -393,7 +393,7 @@ seller:{userId}     # 판매자 알림
 │    base32: "JBSWY3DPEHPK3PXP"               │
 │                                              │
 │ 3. Backend → QR 코드 생성                    │
-│    otpauth://totp/WeDisk:user@example.com   │
+│    otpauth://totp/EduVault:user@example.com   │
 │                                              │
 │ 4. 사용자 → Authenticator 앱에 등록          │
 │    (Google Auth, Authy 등)                  │
@@ -638,4 +638,4 @@ E2E 테스트 (End-to-End)
 
 **작성일**: 2024-11-21
 **버전**: 1.0
-**WeDisk Clone Project**
+**EduVault Clone Project**

@@ -1,4 +1,4 @@
-# WeDisk Clone - 전체 기능 목록
+# EduVault Clone - 전체 기능 목록
 
 ## ✅ 완전히 구현된 기능
 
@@ -98,7 +98,7 @@
 - ✅ 쿠폰 관리
 
 ### 10. UI/UX
-- ✅ WeDisk 스타일 디자인
+- ✅ EduVault 스타일 디자인
 - ✅ 반응형 디자인
 - ✅ 헤더 네비게이션
 - ✅ 사이드바 메뉴
@@ -245,10 +245,10 @@
 ## 🎓 테스트 계정
 
 ### 백엔드
-- **관리자**: admin@wedisk.com / password123
-- **판매자 1**: seller1@wedisk.com / password123
-- **판매자 2**: seller2@wedisk.com / password123
-- **일반 사용자**: user@wedisk.com / password123
+- **관리자**: admin@eduvault.com / password123
+- **판매자 1**: seller1@eduvault.com / password123
+- **판매자 2**: seller2@eduvault.com / password123
+- **일반 사용자**: user@eduvault.com / password123
 - **테스트 사용자**: user1@test.com ~ user10@test.com / password123
 
 ## 💻 기술 스택
@@ -325,7 +325,7 @@
 
 ## 🏆 주요 달성 사항
 
-1. ✅ **완전한 웹하드 서비스 구현**
+1. ✅ **완전한 교육 플랫폼 서비스 구현**
 2. ✅ **React Native 모바일 앱 (8개 화면)**
 3. ✅ **Elasticsearch 고급 검색**
 4. ✅ **2FA 인증 (TOTP)**
@@ -345,4 +345,4 @@
 
 ## 📝 참고사항
 
-이 프로젝트는 https://www.wedisk.co.kr/ 사이트를 벤치마킹하여 만들어진 완전한 클론 프로젝트입니다. 실제 서비스 운영을 위한 모든 핵심 기능이 구현되어 있으며, 추가 개발을 통해 상용 서비스로 발전시킬 수 있습니다.
+이 프로젝트는 https://www.eduvault.co.kr/ 사이트를 벤치마킹하여 만들어진 완전한 클론 프로젝트입니다. 실제 서비스 운영을 위한 모든 핵심 기능이 구현되어 있으며, 추가 개발을 통해 상용 서비스로 발전시킬 수 있습니다.

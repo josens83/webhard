@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wedisk-v1';
+const CACHE_NAME = 'eduvault-v1';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -51,14 +51,14 @@ self.addEventListener('activate', (event) => {
 // Push notification
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
-  const title = data.title || 'WeDisk 알림';
+  const title = data.title || 'EduVault 알림';
   const options = {
     body: data.body || '새로운 알림이 있습니다.',
     icon: '/icon-192x192.png',
     badge: '/badge-72x72.png',
     data: data.url || '/',
     vibrate: [200, 100, 200],
-    tag: data.tag || 'wedisk-notification',
+    tag: data.tag || 'eduvault-notification',
     requireInteraction: true,
     actions: data.actions || [],
   };
@@ -101,4 +101,4 @@ self.addEventListener('message', (event) => {
   }
 });
 
-console.log('WeDisk Service Worker v1.0 loaded');
+console.log('EduVault Service Worker v1.0 loaded');
