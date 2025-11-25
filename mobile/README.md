@@ -1,4 +1,4 @@
-# WeDisk Mobile App
+# EduVault Mobile App
 
 React Native 모바일 앱 (iOS & Android)
 

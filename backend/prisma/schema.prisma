@@ -1,4 +1,4 @@
-// Prisma Schema for WeDisk Clone
+// Prisma Schema for EduVault - Educational Content Platform
 
 generator client {
   provider = "prisma-client-js"
@@ -31,6 +31,17 @@ model User {
   isSeller          Boolean   @default(false)
   isAdmin           Boolean   @default(false)
 
+  // 교육 플랫폼 역할
+  role              UserRole  @default(STUDENT)
+  isTeacher         Boolean   @default(false)
+  isInstitution     Boolean   @default(false)
+
+  // 교육자 정보
+  bio               String?
+  expertise         String[]  @default([])
+  qualifications    String[]  @default([])
+  institutionId     String?
+
   // 포인트/캐시 시스템
   cash              Int       @default(0)
   point             Int       @default(0)
@@ -57,6 +68,19 @@ model User {
   transactions      Transaction[]
   notifications     Notification[]
   reports           Report[]
+
+  // 교육 관계
+  institution       Institution?       @relation("InstitutionMember", fields: [institutionId], references: [id])
+  ownedInstitution  Institution?       @relation("InstitutionOwner")
+  createdCourses    Course[]           @relation("CourseCreator")
+  enrollments       Enrollment[]
+  teachingCourses   Course[]           @relation("CourseTeacher")
+  completedLessons  LessonProgress[]
+  quizAttempts      QuizAttempt[]
+  certificates      Certificate[]
+  learningPaths     LearningPath[]
+  aiInteractions    AIInteraction[]
+  copyrightRecords  CopyrightRecord[]
 
   @@index([email])
   @@index([username])
@@ -86,7 +110,15 @@ enum MembershipLevel {
   VIP
 }
 
-// 카테고리 모델
+enum UserRole {
+  STUDENT
+  TEACHER
+  CONTENT_CREATOR
+  INSTITUTION_ADMIN
+  SUPER_ADMIN
+}
+
+// 카테고리 모델 (교육 분류 체계)
 model Category {
   id          String   @id @default(uuid())
   name        String
@@ -95,6 +127,14 @@ model Category {
   description String?
   order       Int      @default(0)
   isActive    Boolean  @default(true)
+
+  // 교육 분류
+  educationType     EducationType?
+  gradeLevel        String[]      @default([])  // K-12, University, Graduate, Professional
+  subjectArea       String?                      // Math, Science, Language, etc.
+
+  // 커리큘럼 정렬
+  curriculumStandard String?      // Common Core, IB, AP, etc.
 
   // 부모-자식 관계 (서브카테고리)
   parentId    String?
@@ -105,10 +145,22 @@ model Category {
   updatedAt   DateTime @updatedAt
 
   files       File[]
+  courses     Course[]
 
   @@index([slug])
   @@index([parentId])
+  @@index([educationType])
   @@map("categories")
+}
+
+enum EducationType {
+  K12              // K-12 교육
+  HIGHER_EDUCATION // 대학/대학원
+  PROFESSIONAL     // 전문 교육
+  LIFELONG         // 평생 교육
+  VOCATIONAL       // 직업 교육
+  TEST_PREP        // 시험 준비
+  CERTIFICATION    // 자격증
 }
 
 // 파일 모델
@@ -145,6 +197,27 @@ model File {
   isFeatured      Boolean   @default(false)
   isAdult         Boolean   @default(false)
 
+  // 교육 메타데이터
+  learningObjectives  String[]         @default([])
+  prerequisites       String[]         @default([])
+  difficultyLevel     DifficultyLevel?
+  estimatedTime       Int?             // 학습 예상 시간 (분)
+  targetAudience      String[]         @default([])
+  educationalUse      EducationalUse?
+
+  // 품질 및 검증
+  isVerifiedContent   Boolean          @default(false)
+  qualityScore        Float?           // AI 기반 품질 점수
+  pedagogicalScore    Float?           // 교육학적 점수
+  accessibilityScore  Float?           // 접근성 점수
+
+  // 라이선스 및 저작권
+  licenseType         LicenseType      @default(ALL_RIGHTS_RESERVED)
+  copyrightYear       Int?
+  attribution         String?
+  isOriginalWork      Boolean          @default(true)
+  sourceUrl           String?
+
   // 업로더 정보
   uploaderId      String
   uploader        User      @relation("UserUploads", fields: [uploaderId], references: [id])
@@ -170,6 +243,10 @@ model File {
   favorites       Favorite[]
   reports         Report[]
 
+  // 교육 관계
+  lessons         Lesson[]
+  copyrightRecords CopyrightRecord[]
+
   @@index([uploaderId])
   @@index([categoryId])
   @@index([status])
@@ -189,6 +266,38 @@ enum FileStatus {
   APPROVED
   REJECTED
   DELETED
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  ELEMENTARY
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum EducationalUse {
+  LESSON_PLAN
+  TEACHING_MATERIAL
+  STUDENT_WORKSHEET
+  ASSESSMENT
+  REFERENCE
+  MULTIMEDIA
+  INTERACTIVE
+  TEXTBOOK
+  RESEARCH
+}
+
+enum LicenseType {
+  ALL_RIGHTS_RESERVED
+  CC_BY              // Attribution
+  CC_BY_SA           // Attribution-ShareAlike
+  CC_BY_NC           // Attribution-NonCommercial
+  CC_BY_NC_SA        // Attribution-NonCommercial-ShareAlike
+  CC_BY_ND           // Attribution-NoDerivatives
+  CC_BY_NC_ND        // Attribution-NonCommercial-NoDerivatives
+  CC0                // Public Domain
+  EDUCATIONAL_USE    // 교육용 라이선스
 }
 
 // 태그 모델
@@ -540,4 +649,566 @@ model Setting {
   updatedAt DateTime @updatedAt
 
   @@map("settings")
+}
+
+// ============================================================================
+// 교육 플랫폼 모델 (EduVault Educational Models)
+// ============================================================================
+
+// 교육 기관 모델
+model Institution {
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique
+  type            InstitutionType
+
+  // 기관 정보
+  description     String?
+  logo            String?
+  website         String?
+  email           String?
+  phone           String?
+
+  // 주소
+  address         String?
+  city            String?
+  state           String?
+  country         String   @default("KR")
+  postalCode      String?
+
+  // 인증 및 검증
+  isVerified      Boolean  @default(false)
+  verifiedAt      DateTime?
+  accreditation   String[] @default([])
+
+  // 구독 및 요금
+  subscriptionTier String  @default("basic")
+  subscriptionExpiry DateTime?
+
+  // 통계
+  memberCount     Int      @default(0)
+  courseCount     Int      @default(0)
+
+  // 관리자
+  ownerId         String   @unique
+  owner           User     @relation("InstitutionOwner", fields: [ownerId], references: [id])
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // 관계
+  members         User[]   @relation("InstitutionMember")
+  courses         Course[]
+
+  @@index([slug])
+  @@index([type])
+  @@map("institutions")
+}
+
+enum InstitutionType {
+  K12_SCHOOL
+  UNIVERSITY
+  COLLEGE
+  TRAINING_CENTER
+  CORPORATE
+  NONPROFIT
+  GOVERNMENT
+  OTHER
+}
+
+// 코스 모델 (강좌/과정)
+model Course {
+  id              String   @id @default(uuid())
+  title           String
+  slug            String   @unique
+  description     String?
+
+  // 코스 메타데이터
+  objectives      String[] @default([])
+  prerequisites   String[] @default([])
+  difficultyLevel DifficultyLevel @default(BEGINNER)
+  estimatedHours  Int?     // 예상 학습 시간
+
+  // 분류
+  categoryId      String
+  category        Category @relation(fields: [categoryId], references: [id])
+
+  educationType   EducationType
+  gradeLevel      String[] @default([])
+  subjectArea     String?
+
+  // 커리큘럼 정렬
+  curriculumStandard String?
+  learningStandards  String[] @default([])
+
+  // 미디어
+  thumbnail       String?
+  previewVideo    String?
+
+  // 가격
+  price           Int      @default(0)
+  priceType       PriceType @default(FREE)
+
+  // 제작자
+  creatorId       String
+  creator         User     @relation("CourseCreator", fields: [creatorId], references: [id])
+
+  // 교수자 (강사)
+  teacherId       String?
+  teacher         User?    @relation("CourseTeacher", fields: [teacherId], references: [id])
+
+  // 기관
+  institutionId   String?
+  institution     Institution? @relation(fields: [institutionId], references: [id])
+
+  // 상태 및 품질
+  status          CourseStatus @default(DRAFT)
+  isPublished     Boolean  @default(false)
+  publishedAt     DateTime?
+
+  qualityScore    Float?
+  pedagogicalScore Float?
+
+  // 라이선스
+  licenseType     LicenseType @default(ALL_RIGHTS_RESERVED)
+
+  // 통계
+  enrollmentCount Int      @default(0)
+  completionRate  Float    @default(0)
+  rating          Float    @default(0)
+  reviewCount     Int      @default(0)
+
+  // 설정
+  isEnrollmentOpen Boolean @default(true)
+  maxEnrollments   Int?
+  startDate        DateTime?
+  endDate          DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // 관계
+  lessons         Lesson[]
+  enrollments     Enrollment[]
+  certificates    Certificate[]
+  learningPaths   LearningPath[] @relation("PathCourses")
+
+  @@index([slug])
+  @@index([creatorId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([educationType])
+  @@map("courses")
+}
+
+enum CourseStatus {
+  DRAFT
+  UNDER_REVIEW
+  PUBLISHED
+  ARCHIVED
+  DELETED
+}
+
+// 레슨 모델 (강의/수업)
+model Lesson {
+  id              String   @id @default(uuid())
+  title           String
+  slug            String
+  description     String?
+
+  // 레슨 내용
+  content         String?  // 텍스트 콘텐츠
+  contentType     LessonType
+
+  // 순서
+  order           Int
+  duration        Int?     // 예상 소요 시간 (분)
+
+  // 코스
+  courseId        String
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  // 첨부 파일
+  fileId          String?
+  file            File?    @relation(fields: [fileId], references: [id])
+
+  // 미디어
+  videoUrl        String?
+  audioUrl        String?
+  attachments     String[] @default([])
+
+  // 학습 목표
+  objectives      String[] @default([])
+
+  // 상태
+  isPublished     Boolean  @default(false)
+  isFree          Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // 관계
+  quiz            Quiz?
+  progress        LessonProgress[]
+
+  @@unique([courseId, slug])
+  @@index([courseId])
+  @@map("lessons")
+}
+
+enum LessonType {
+  VIDEO
+  AUDIO
+  TEXT
+  DOCUMENT
+  INTERACTIVE
+  QUIZ
+  ASSIGNMENT
+  LIVE_SESSION
+}
+
+// 등록/수강 모델
+model Enrollment {
+  id              String   @id @default(uuid())
+
+  studentId       String
+  student         User     @relation(fields: [studentId], references: [id])
+
+  courseId        String
+  course          Course   @relation(fields: [courseId], references: [id])
+
+  // 상태
+  status          EnrollmentStatus @default(ACTIVE)
+  progress        Float    @default(0)  // 0-100
+
+  // 시작/완료 날짜
+  enrolledAt      DateTime @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+  expiresAt       DateTime?
+
+  // 성적
+  finalGrade      Float?
+  isPassed        Boolean  @default(false)
+
+  // 결제
+  purchasePrice   Int      @default(0)
+  purchaseType    PriceType @default(FREE)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
+  @@index([status])
+  @@map("enrollments")
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  EXPIRED
+  CANCELLED
+  SUSPENDED
+}
+
+// 레슨 진행 상황
+model LessonProgress {
+  id              String   @id @default(uuid())
+
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  lessonId        String
+  lesson          Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  // 진행 상황
+  isCompleted     Boolean  @default(false)
+  progress        Float    @default(0)  // 0-100
+  timeSpent       Int      @default(0)  // 초
+
+  // 마지막 위치 (비디오 등)
+  lastPosition    Int?
+
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
+  @@map("lesson_progress")
+}
+
+// 퀴즈 모델
+model Quiz {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+
+  lessonId        String   @unique
+  lesson          Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  // 설정
+  passingScore    Int      @default(70)  // 통과 점수 (%)
+  timeLimit       Int?     // 제한 시간 (분)
+  maxAttempts     Int?     // 최대 시도 횟수
+  shuffleQuestions Boolean @default(false)
+  showCorrectAnswers Boolean @default(true)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // 관계
+  questions       Question[]
+  attempts        QuizAttempt[]
+
+  @@index([lessonId])
+  @@map("quizzes")
+}
+
+// 문제 모델
+model Question {
+  id              String   @id @default(uuid())
+
+  quizId          String
+  quiz            Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  // 문제 내용
+  questionText    String
+  questionType    QuestionType
+
+  // 순서 및 배점
+  order           Int
+  points          Int      @default(1)
+
+  // 설명
+  explanation     String?
+
+  // 미디어
+  imageUrl        String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // 관계
+  answers         Answer[]
+
+  @@index([quizId])
+  @@map("questions")
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+  ESSAY
+  FILL_IN_BLANK
+  MATCHING
+}
+
+// 답변 옵션 모델
+model Answer {
+  id              String   @id @default(uuid())
+
+  questionId      String
+  question        Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  answerText      String
+  isCorrect       Boolean  @default(false)
+  order           Int
+
+  explanation     String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([questionId])
+  @@map("answers")
+}
+
+// 퀴즈 시도 기록
+model QuizAttempt {
+  id              String   @id @default(uuid())
+
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  quizId          String
+  quiz            Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  // 결과
+  score           Float    // 0-100
+  isPassed        Boolean
+
+  // 답변
+  answers         Json     // { questionId: selectedAnswerId }
+
+  // 시간
+  timeSpent       Int      // 초
+  attemptNumber   Int
+
+  startedAt       DateTime
+  completedAt     DateTime
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@index([quizId])
+  @@map("quiz_attempts")
+}
+
+// 수료증 모델
+model Certificate {
+  id              String   @id @default(uuid())
+  certificateNumber String @unique
+
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  courseId        String
+  course          Course   @relation(fields: [courseId], references: [id])
+
+  // 수료 정보
+  finalGrade      Float?
+  completionDate  DateTime
+
+  // 증명서 데이터
+  issuerName      String
+  issuerTitle     String?
+  issuerSignature String?
+
+  // 검증
+  verificationCode String  @unique
+  isVerified      Boolean  @default(true)
+
+  // PDF/이미지
+  certificateUrl  String?
+
+  // 블록체인 기록
+  blockchainHash  String?
+  blockchainTx    String?
+
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@index([courseId])
+  @@index([certificateNumber])
+  @@map("certificates")
+}
+
+// 학습 경로 모델 (AI 추천 커리큘럼)
+model LearningPath {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  // 경로 설정
+  targetRole      String?  // 목표 직업/역할
+  difficultyLevel DifficultyLevel
+  estimatedHours  Int?
+
+  // AI 생성 여부
+  isAIGenerated   Boolean  @default(false)
+
+  // 진행 상황
+  progress        Float    @default(0)
+  isCompleted     Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  completedAt     DateTime?
+
+  // 관계
+  courses         Course[] @relation("PathCourses")
+
+  @@index([userId])
+  @@map("learning_paths")
+}
+
+// 저작권 기록 (블록체인 연동)
+model CopyrightRecord {
+  id              String   @id @default(uuid())
+
+  // 콘텐츠
+  fileId          String?
+  file            File?    @relation(fields: [fileId], references: [id])
+
+  // 소유자
+  ownerId         String
+  owner           User     @relation(fields: [ownerId], references: [id])
+
+  // 저작권 정보
+  title           String
+  description     String?
+  copyrightYear   Int
+
+  // 블록체인 정보
+  blockchainNetwork String // ethereum, polygon, etc.
+  contractAddress String?
+  tokenId         String?
+  transactionHash String?
+  ipfsHash        String?  // IPFS 콘텐츠 해시
+
+  // NFT 정보
+  isNFT           Boolean  @default(false)
+  nftMetadataUrl  String?
+
+  // 라이선스
+  licenseType     LicenseType
+
+  // 검증
+  isVerified      Boolean  @default(false)
+  verifiedAt      DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([fileId])
+  @@index([transactionHash])
+  @@map("copyright_records")
+}
+
+// AI 상호작용 기록 (학습 분석 및 추천)
+model AIInteraction {
+  id              String   @id @default(uuid())
+
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  // 상호작용 유형
+  interactionType AIInteractionType
+
+  // 입력/출력
+  input           String
+  output          String
+
+  // 메타데이터
+  metadata        Json?
+
+  // AI 모델 정보
+  modelUsed       String?
+  tokensUsed      Int?
+
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@index([interactionType])
+  @@map("ai_interactions")
+}
+
+enum AIInteractionType {
+  CONTENT_GENERATION
+  TUTORING
+  QUIZ_GENERATION
+  LEARNING_PATH_RECOMMENDATION
+  CONTENT_ANALYSIS
+  PLAGIARISM_CHECK
+  QUESTION_ANSWER
+  SUMMARY
+  TRANSLATION
 }

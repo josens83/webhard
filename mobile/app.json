@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "WeDisk",
-    "slug": "wedisk",
+    "name": "EduVault",
+    "slug": "eduvault",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,7 +16,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.wedisk.app",
+      "bundleIdentifier": "com.eduvault.app",
       "buildNumber": "1.0.0"
     },
     "android": {
@@ -24,7 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0ea5e9"
       },
-      "package": "com.wedisk.app",
+      "package": "com.eduvault.app",
       "versionCode": 1,
       "permissions": [
         "READ_EXTERNAL_STORAGE",
@@ -46,7 +46,7 @@
         }
       ]
     ],
-    "scheme": "wedisk",
+    "scheme": "eduvault",
     "extra": {
       "apiUrl": "http://localhost:4000/api",
       "eas": {

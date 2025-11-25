@@ -50,7 +50,7 @@ function MainTabs() {
       <Tab.Screen
         name="Home"
         component={HomeScreen}
-        options={{ title: 'WeDisk' }}
+        options={{ title: 'EduVault' }}
       />
       <Tab.Screen
         name="Files"

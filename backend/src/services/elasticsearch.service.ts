@@ -2,7 +2,7 @@ import { Client } from '@elastic/elasticsearch';
 import { File, Category, Tag } from '@prisma/client';
 
 const ELASTICSEARCH_NODE = process.env.ELASTICSEARCH_NODE || 'http://localhost:9200';
-const INDEX_NAME = 'wedisk_files';
+const INDEX_NAME = 'eduvault_files';
 
 class ElasticsearchService {
   private client: Client;
