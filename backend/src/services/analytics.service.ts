@@ -345,7 +345,7 @@ class AnalyticsService {
   }
 
   private async calculateConversionRate(fromEvent: string, toEvent: string): Promise<number> {
-    const usersWith From = new Set(this.events.filter(e => e.event === fromEvent).map(e => e.userId));
+    const usersWithFrom = new Set(this.events.filter(e => e.event === fromEvent).map(e => e.userId));
     const usersWithTo = new Set(this.events.filter(e => e.event === toEvent).map(e => e.userId));
 
     let converted = 0;

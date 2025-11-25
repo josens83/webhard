@@ -27,7 +27,7 @@ interface UpgradeOffer {
   offerType: string;
   discount: number;
   expiresAt: Date;
-  triggered By: string; // Magic moment that triggered this
+  triggeredBy: string; // Magic moment that triggered this
 }
 
 class FreemiumOptimizationService {
