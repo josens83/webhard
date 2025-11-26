@@ -37,9 +37,8 @@ import copyrightRoutes from './routes/copyright.routes';
 import analyticsRoutes from './routes/analytics.routes';
 import abTestingRoutes from './routes/ab-testing.routes';
 
-// Communication Routes (쪽지 & 친구)
-import messageRoutes from './routes/message.routes';
-import friendRoutes from './routes/friend.routes';
+// Chat Routes
+import chatRoutes from './routes/chat.routes';
 
 dotenv.config();
 
@@ -134,9 +133,8 @@ app.use('/api/copyright', copyrightRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ab-testing', abTestingRoutes);
 
-// Communication Routes (쪽지 & 친구)
-app.use('/api/messages', messageRoutes);
-app.use('/api/friends', friendRoutes);
+// Chat Routes
+app.use('/api/chat', chatRoutes);
 
 // Error handling
 app.use(notFoundHandler);
@@ -159,8 +157,7 @@ app.listen(PORT, () => {
   console.log(`   🧪 A/B Testing: /api/ab-testing`);
   console.log(`   ⚡ Performance Monitoring: Active`);
   console.log(`\n💬 Communication:`);
-  console.log(`   ✉️  Messages: /api/messages`);
-  console.log(`   👥 Friends: /api/friends`);
+  console.log(`   💬 Chat: /api/chat`);
   console.log(`================================\n`);
 });
 

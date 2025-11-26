@@ -1,82 +1,12 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import {
-  Search, User, LogOut, Upload, Wallet, Mail, Users,
-  Bell, ChevronDown, Gift, Calendar, Smartphone,
-  Zap, Crown, BookOpen, Gamepad2, Film, Tv, Music, FileText, Star
-} from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, User, LogOut, Settings, Upload, Wallet, MessageCircle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
-import { useState, useEffect, useRef } from 'react';
-import { messagesApi } from '../api/messages';
-import { friendsApi } from '../api/friends';
-
-// 카테고리 데이터 (서브메뉴 포함)
-const CATEGORIES = [
-  {
-    id: 'popular',
-    name: '인기100',
-    icon: Star,
-    color: 'text-yellow-400',
-    isSpecial: true,
-    path: '/files?popular=true',
-  },
-  {
-    id: 'all',
-    name: '전체',
-    icon: null,
-    path: '/files',
-  },
-  {
-    id: 'movie',
-    name: '영화',
-    icon: Film,
-    subCategories: ['한국영화', '외국영화', '최신영화', '고화질', '시리즈']
-  },
-  {
-    id: 'drama',
-    name: '드라마',
-    icon: Tv,
-    subCategories: ['한국드라마', '미드', '일드', '중드', '넷플릭스']
-  },
-  {
-    id: 'video',
-    name: '동영상',
-    icon: Music,
-    subCategories: ['뮤직비디오', '예능', '다큐멘터리', 'UCC', '스포츠']
-  },
-  {
-    id: 'game',
-    name: '게임',
-    icon: Gamepad2,
-    subCategories: ['PC게임', '온라인게임', '모바일게임', '에뮬레이터', '유틸리티']
-  },
-  {
-    id: 'anime',
-    name: '애니',
-    icon: null,
-    subCategories: ['신작', '완결', '극장판', '특촬', 'OVA']
-  },
-  {
-    id: 'book',
-    name: '도서',
-    icon: BookOpen,
-    subCategories: ['만화', '소설', '잡지', '자기계발', '전문서적']
-  },
-  {
-    id: 'education',
-    name: '교육',
-    icon: FileText,
-    subCategories: ['강의', '자격증', '어학', '초중고', '대학']
-  },
-  {
-    id: 'etc',
-    name: '기타',
-    icon: null,
-    subCategories: ['소프트웨어', '이미지', '템플릿', '기타자료']
-  },
-];
+import { useChatStore } from '../store/chatStore';
+import { useState, useEffect } from 'react';
 
 export default function Header() {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated, logout, token } = useAuthStore();
+  const { totalUnreadCount, initSocket, reset: resetChat } = useChatStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -123,6 +53,18 @@ export default function Header() {
       // Silently fail
     }
   };
+
+  // Socket 초기화
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      initSocket(token);
+    }
+    return () => {
+      if (!isAuthenticated) {
+        resetChat();
+      }
+    };
+  }, [isAuthenticated, token, initSocket, resetChat]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -274,92 +216,21 @@ export default function Header() {
                   className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
                   title="쪽지함"
                 >
-                  <Mail className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                  {unreadMessages > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                      {unreadMessages > 9 ? '9+' : unreadMessages}
-                    </span>
-                  )}
-                </Link>
-
-                <Link
-                  to="/friends"
-                  className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
-                  title="친구"
+                  <Wallet className="w-5 h-5" />
+                </button>
+                {/* 채팅 버튼 */}
+                <button
+                  onClick={() => navigate('/chat')}
+                  className="p-2 hover:bg-gray-100 rounded-lg relative"
+                  title="메시지"
                 >
-                  <Users className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                  {pendingRequests > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                      {pendingRequests > 9 ? '9+' : pendingRequests}
+                  <MessageCircle className="w-5 h-5" />
+                  {totalUnreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
                     </span>
                   )}
-                </Link>
-
-                {/* 통합 알림 */}
-                <div className="relative" ref={notificationRef}>
-                  <button
-                    onClick={() => setShowNotifications(!showNotifications)}
-                    className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
-                    title="알림"
-                  >
-                    <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                    {totalNotifications > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                        {totalNotifications > 9 ? '9+' : totalNotifications}
-                      </span>
-                    )}
-                  </button>
-
-                  {/* 알림 드롭다운 */}
-                  {showNotifications && (
-                    <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-xl border dark:border-gray-700 z-50">
-                      <div className="p-3 border-b dark:border-gray-700">
-                        <h3 className="font-bold text-sm dark:text-white">알림</h3>
-                      </div>
-                      <div className="max-h-80 overflow-y-auto">
-                        {unreadMessages > 0 && (
-                          <Link
-                            to="/messages"
-                            onClick={() => setShowNotifications(false)}
-                            className="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b dark:border-gray-700"
-                          >
-                            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                              <Mail className="w-5 h-5 text-blue-600" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium dark:text-white">새 쪽지</p>
-                              <p className="text-xs text-gray-500">{unreadMessages}개의 읽지 않은 쪽지가 있습니다</p>
-                            </div>
-                          </Link>
-                        )}
-                        {pendingRequests > 0 && (
-                          <Link
-                            to="/friends?tab=received"
-                            onClick={() => setShowNotifications(false)}
-                            className="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700"
-                          >
-                            <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                              <Users className="w-5 h-5 text-green-600" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium dark:text-white">친구 요청</p>
-                              <p className="text-xs text-gray-500">{pendingRequests}개의 친구 요청이 있습니다</p>
-                            </div>
-                          </Link>
-                        )}
-                        {totalNotifications === 0 && (
-                          <div className="p-6 text-center text-gray-500 text-sm">
-                            새로운 알림이 없습니다
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* 기타 버튼 */}
-              <div className="flex items-center gap-1 border-l pl-3 dark:border-gray-700">
+                </button>
                 {user.isSeller && (
                   <button
                     onClick={() => navigate('/upload')}

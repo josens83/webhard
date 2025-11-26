@@ -16,9 +16,8 @@ import OnboardingFlow from './pages/OnboardingFlow'
 import CoursesPage from './pages/CoursesPage'
 import StudentDashboard from './pages/StudentDashboard'
 
-// Communication Pages (쪽지/친구)
-import MessagesPage from './pages/MessagesPage'
-import FriendsPage from './pages/FriendsPage'
+// Chat Page
+import ChatPage from './pages/ChatPage'
 
 function App() {
   return (
@@ -39,15 +38,10 @@ function App() {
           </ProtectedRoute>
         } />
 
-        {/* Communication Routes (쪽지/친구) */}
-        <Route path="messages" element={
+        {/* Chat Route */}
+        <Route path="chat" element={
           <ProtectedRoute>
-            <MessagesPage />
-          </ProtectedRoute>
-        } />
-        <Route path="friends" element={
-          <ProtectedRoute>
-            <FriendsPage />
+            <ChatPage />
           </ProtectedRoute>
         } />
 

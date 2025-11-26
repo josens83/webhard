@@ -82,13 +82,9 @@ model User {
   aiInteractions    AIInteraction[]
   copyrightRecords  CopyrightRecord[]
 
-  // 메시징 관계
-  sentMessages          Message[]        @relation("SentMessages")
-  receivedMessages      Message[]        @relation("ReceivedMessages")
-  friends               Friend[]         @relation("UserFriends")
-  friendOf              Friend[]         @relation("FriendOf")
-  sentFriendRequests    FriendRequest[]  @relation("SentFriendRequests")
-  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
+  // 채팅 관계
+  chatParticipants  ChatParticipant[]
+  sentMessages      Message[]
 
   @@index([email])
   @@index([username])
@@ -1222,104 +1218,152 @@ enum AIInteractionType {
 }
 
 // ============================================================================
-// 메시징 시스템 (쪽지/친구)
+// 채팅 시스템 모델 (Chat System Models)
 // ============================================================================
 
-// 쪽지 모델
+// 채팅방 모델
+model ChatRoom {
+  id              String   @id @default(uuid())
+
+  // 채팅방 정보
+  name            String?              // 그룹 채팅방 이름 (1:1은 null)
+  type            ChatRoomType         @default(DIRECT)
+
+  // 관련 컨텐츠 (파일/강좌 채팅방인 경우)
+  relatedFileId   String?
+  relatedCourseId String?
+
+  // 마지막 메시지 정보 (목록 표시용)
+  lastMessage     String?
+  lastMessageAt   DateTime?
+
+  // 상태
+  isActive        Boolean  @default(true)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // 관계
+  participants    ChatParticipant[]
+  messages        Message[]
+
+  @@index([type])
+  @@index([lastMessageAt])
+  @@map("chat_rooms")
+}
+
+enum ChatRoomType {
+  DIRECT          // 1:1 채팅
+  GROUP           // 그룹 채팅
+  SUPPORT         // 고객센터
+  FILE_DISCUSSION // 파일 토론방
+  COURSE_DISCUSSION // 강좌 토론방
+}
+
+// 채팅방 참가자 모델
+model ChatParticipant {
+  id              String   @id @default(uuid())
+
+  // 참가자 정보
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  chatRoomId      String
+  chatRoom        ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+
+  // 역할 및 권한
+  role            ParticipantRole @default(MEMBER)
+
+  // 읽음 상태
+  lastReadAt      DateTime?
+  unreadCount     Int      @default(0)
+
+  // 알림 설정
+  isMuted         Boolean  @default(false)
+
+  // 상태
+  isActive        Boolean  @default(true)
+  leftAt          DateTime?
+
+  joinedAt        DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, chatRoomId])
+  @@index([userId])
+  @@index([chatRoomId])
+  @@map("chat_participants")
+}
+
+enum ParticipantRole {
+  OWNER           // 방장
+  ADMIN           // 관리자
+  MEMBER          // 일반 멤버
+}
+
+// 메시지 모델
 model Message {
-  id              String        @id @default(uuid())
+  id              String   @id @default(uuid())
+
+  // 메시지 내용
+  content         String
+  messageType     MessageType @default(TEXT)
+
+  // 첨부 파일 (이미지, 파일 등)
+  attachmentUrl   String?
+  attachmentType  String?
+  attachmentName  String?
 
   // 발신자
   senderId        String
-  sender          User          @relation("SentMessages", fields: [senderId], references: [id])
+  sender          User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
-  // 수신자
-  receiverId      String
-  receiver        User          @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  // 채팅방
+  chatRoomId      String
+  chatRoom        ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
 
-  // 내용
-  content         String
+  // 답장 (스레드)
+  replyToId       String?
+  replyTo         Message? @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies         Message[] @relation("MessageReplies")
 
   // 상태
-  isRead          Boolean       @default(false)
-  isDeletedBySender   Boolean   @default(false)
-  isDeletedByReceiver Boolean   @default(false)
+  isEdited        Boolean  @default(false)
+  isDeleted       Boolean  @default(false)
+  deletedAt       DateTime?
 
-  // 타임스탬프
-  readAt          DateTime?
-  createdAt       DateTime      @default(now())
+  // 읽음 상태 추적
+  readBy          MessageRead[]
 
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([chatRoomId])
   @@index([senderId])
-  @@index([receiverId])
-  @@index([isRead])
   @@index([createdAt])
   @@map("messages")
 }
 
-// 친구 관계 모델
-model Friend {
-  id              String        @id @default(uuid())
+enum MessageType {
+  TEXT            // 텍스트
+  IMAGE           // 이미지
+  FILE            // 파일
+  SYSTEM          // 시스템 메시지 (입장, 퇴장 등)
+  LINK            // 링크 프리뷰
+}
 
-  // 사용자 (친구 관계는 양방향)
+// 메시지 읽음 상태 (선택적 - 읽음 표시용)
+model MessageRead {
+  id              String   @id @default(uuid())
+
+  messageId       String
+  message         Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
   userId          String
-  user            User          @relation("UserFriends", fields: [userId], references: [id])
 
-  // 친구
-  friendId        String
-  friend          User          @relation("FriendOf", fields: [friendId], references: [id])
+  readAt          DateTime @default(now())
 
-  // 그룹/분류 (선택적)
-  groupName       String?       @default("기본")
-
-  // 별명 (선택적)
-  nickname        String?
-
-  // 즐겨찾기
-  isFavorite      Boolean       @default(false)
-
-  // 차단 여부
-  isBlocked       Boolean       @default(false)
-
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-
-  @@unique([userId, friendId])
+  @@unique([messageId, userId])
+  @@index([messageId])
   @@index([userId])
-  @@index([friendId])
-  @@map("friends")
-}
-
-// 친구 요청 모델
-model FriendRequest {
-  id              String              @id @default(uuid())
-
-  // 요청 보낸 사람
-  requesterId     String
-  requester       User                @relation("SentFriendRequests", fields: [requesterId], references: [id])
-
-  // 요청 받은 사람
-  receiverId      String
-  receiver        User                @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
-
-  // 상태
-  status          FriendRequestStatus @default(PENDING)
-
-  // 메시지 (선택적)
-  message         String?
-
-  // 타임스탬프
-  respondedAt     DateTime?
-  createdAt       DateTime            @default(now())
-
-  @@unique([requesterId, receiverId])
-  @@index([requesterId])
-  @@index([receiverId])
-  @@index([status])
-  @@map("friend_requests")
-}
-
-enum FriendRequestStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
+  @@map("message_reads")
 }
