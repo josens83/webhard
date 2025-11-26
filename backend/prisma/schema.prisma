@@ -82,6 +82,14 @@ model User {
   aiInteractions    AIInteraction[]
   copyrightRecords  CopyrightRecord[]
 
+  // 메시징 관계
+  sentMessages          Message[]        @relation("SentMessages")
+  receivedMessages      Message[]        @relation("ReceivedMessages")
+  friends               Friend[]         @relation("UserFriends")
+  friendOf              Friend[]         @relation("FriendOf")
+  sentFriendRequests    FriendRequest[]  @relation("SentFriendRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
+
   @@index([email])
   @@index([username])
   @@map("users")
@@ -1211,4 +1219,107 @@ enum AIInteractionType {
   QUESTION_ANSWER
   SUMMARY
   TRANSLATION
+}
+
+// ============================================================================
+// 메시징 시스템 (쪽지/친구)
+// ============================================================================
+
+// 쪽지 모델
+model Message {
+  id              String        @id @default(uuid())
+
+  // 발신자
+  senderId        String
+  sender          User          @relation("SentMessages", fields: [senderId], references: [id])
+
+  // 수신자
+  receiverId      String
+  receiver        User          @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  // 내용
+  content         String
+
+  // 상태
+  isRead          Boolean       @default(false)
+  isDeletedBySender   Boolean   @default(false)
+  isDeletedByReceiver Boolean   @default(false)
+
+  // 타임스탬프
+  readAt          DateTime?
+  createdAt       DateTime      @default(now())
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+// 친구 관계 모델
+model Friend {
+  id              String        @id @default(uuid())
+
+  // 사용자 (친구 관계는 양방향)
+  userId          String
+  user            User          @relation("UserFriends", fields: [userId], references: [id])
+
+  // 친구
+  friendId        String
+  friend          User          @relation("FriendOf", fields: [friendId], references: [id])
+
+  // 그룹/분류 (선택적)
+  groupName       String?       @default("기본")
+
+  // 별명 (선택적)
+  nickname        String?
+
+  // 즐겨찾기
+  isFavorite      Boolean       @default(false)
+
+  // 차단 여부
+  isBlocked       Boolean       @default(false)
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([userId, friendId])
+  @@index([userId])
+  @@index([friendId])
+  @@map("friends")
+}
+
+// 친구 요청 모델
+model FriendRequest {
+  id              String              @id @default(uuid())
+
+  // 요청 보낸 사람
+  requesterId     String
+  requester       User                @relation("SentFriendRequests", fields: [requesterId], references: [id])
+
+  // 요청 받은 사람
+  receiverId      String
+  receiver        User                @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+
+  // 상태
+  status          FriendRequestStatus @default(PENDING)
+
+  // 메시지 (선택적)
+  message         String?
+
+  // 타임스탬프
+  respondedAt     DateTime?
+  createdAt       DateTime            @default(now())
+
+  @@unique([requesterId, receiverId])
+  @@index([requesterId])
+  @@index([receiverId])
+  @@index([status])
+  @@map("friend_requests")
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
