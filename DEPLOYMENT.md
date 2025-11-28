@@ -1,6 +1,81 @@
 # 배포 가이드
 
-## 프로덕션 배포
+## Supabase + Vercel 배포 (권장)
+
+가장 빠르고 간편한 배포 방법입니다. 무료 플랜으로 시작할 수 있습니다.
+
+### 1. Supabase 설정
+
+#### 1.1 프로젝트 생성
+1. [Supabase](https://supabase.com) 접속 → 회원가입/로그인
+2. "New Project" 클릭
+3. 프로젝트 정보 입력:
+   - **Name**: `eduvault`
+   - **Database Password**: 강력한 비밀번호 (저장 필수!)
+   - **Region**: `Northeast Asia (Seoul)`
+4. "Create new project" 클릭 → 2-3분 대기
+
+#### 1.2 연결 정보 확인
+**Settings → Database** 에서:
+```bash
+# Connection pooling (앱용) - DATABASE_URL로 사용
+postgresql://postgres.[ref]:[password]@aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true
+
+# Direct connection (마이그레이션용) - DIRECT_URL로 사용
+postgresql://postgres.[ref]:[password]@aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres
+```
+
+#### 1.3 Storage 설정 (파일 저장용)
+1. **Storage** 메뉴 → "New bucket"
+2. **Name**: `files`
+3. **Public**: Off (비공개)
+
+### 2. 백엔드 배포 (Railway 권장)
+
+#### 2.1 Railway 설정
+1. [Railway](https://railway.app) → GitHub 로그인
+2. "New Project" → "Deploy from GitHub repo"
+3. `webhard` 레포지토리 선택
+4. **Settings** 탭:
+   - **Root Directory**: `backend`
+   - **Build Command**: `npm install && npx prisma generate && npx prisma migrate deploy`
+   - **Start Command**: `npm start`
+
+#### 2.2 환경변수 설정
+Railway **Variables** 탭에서 추가:
+```
+NODE_ENV=production
+DATABASE_URL=postgresql://postgres.[ref]:[password]@aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true
+DIRECT_URL=postgresql://postgres.[ref]:[password]@aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres
+JWT_SECRET=your-32-character-secret-key-here
+CORS_ORIGIN=https://your-vercel-app.vercel.app
+FRONTEND_URL=https://your-vercel-app.vercel.app
+```
+
+### 3. 프론트엔드 배포 (Vercel)
+
+#### 3.1 Vercel 설정
+1. [Vercel](https://vercel.com) → GitHub 로그인
+2. "Import Project" → `webhard` 선택
+3. **Settings**:
+   - **Framework Preset**: Vite
+   - **Root Directory**: `frontend`
+
+#### 3.2 환경변수
+```
+VITE_API_URL=https://your-railway-app.railway.app/api
+VITE_APP_NAME=EduVault
+```
+
+### 4. 배포 완료 후 체크리스트
+- [ ] 백엔드 URL 접속 테스트: `https://your-app.railway.app/health`
+- [ ] 프론트엔드 접속 테스트
+- [ ] 회원가입/로그인 테스트
+- [ ] 쪽지/친구 기능 테스트
+
+---
+
+## 프로덕션 배포 (기존 방식)
 
 ### 1. 환경 변수 설정
 
