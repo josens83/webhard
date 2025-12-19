@@ -22,20 +22,20 @@ interface OnboardingStep {
 const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: 'goal',
-    title: 'What's your learning goal?',
+    title: "What's your learning goal?",
     description: 'Help us personalize your experience',
     icon: <Target className="w-8 h-8" />,
   },
   {
     id: 'level',
-    title: 'What's your current level?',
-    description: 'We'll recommend the right courses',
+    title: "What's your current level?",
+    description: "We'll recommend the right courses",
     icon: <BookOpen className="w-8 h-8" />,
   },
   {
     id: 'time',
     title: 'How much time can you commit?',
-    description: 'We'll create a realistic schedule',
+    description: "We'll create a realistic schedule",
     icon: <Clock className="w-8 h-8" />,
   },
   {

@@ -217,7 +217,7 @@ export default function Header() {
                   title="쪽지함"
                 >
                   <Wallet className="w-5 h-5" />
-                </button>
+                </Link>
                 {/* 채팅 버튼 */}
                 <button
                   onClick={() => navigate('/chat')}

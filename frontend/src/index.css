@@ -168,3 +168,142 @@ code {
 .dark .glass {
   background: rgba(31, 41, 55, 0.8);
 }
+
+/* ============================================
+   접근성(A11y) 유틸리티 (Chapter 17)
+   ============================================ */
+
+/* 스크린 리더 전용 (시각적으로 숨김) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* 포커스 시에만 보이는 요소 (스킵 링크 등) */
+.sr-only-focusable:focus,
+.sr-only-focusable:focus-within {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* 스킵 링크 스타일 */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  padding: 8px 16px;
+  background: #0284c7;
+  color: white;
+  z-index: 9999;
+  transition: top 200ms ease-out;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid #0ea5e9;
+  outline-offset: 2px;
+}
+
+/* 포커스 링 스타일 - 키보드 네비게이션용 */
+*:focus-visible {
+  outline: 2px solid #0ea5e9;
+  outline-offset: 2px;
+}
+
+/* 마우스 클릭 시 포커스 링 숨김 */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* 고대비 포커스 (다크모드) */
+.dark *:focus-visible {
+  outline-color: #38bdf8;
+}
+
+/* 모션 감소 설정 존중 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 모션 감소 비활성화 시 부드러운 스크롤 */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* 포커스 트랩 컨테이너 스타일 */
+.focus-trap-container:focus {
+  outline: none;
+}
+
+/* 라이브 리전 스타일 */
+[aria-live] {
+  /* 시각적으로 보이지 않지만 스크린 리더가 읽음 */
+}
+
+/* 비활성 요소 스타일 */
+[aria-disabled="true"],
+[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 현재 활성 항목 표시 */
+[aria-current="page"],
+[aria-current="step"],
+[aria-current="true"] {
+  font-weight: 600;
+}
+
+/* 확장/축소 표시기 */
+[aria-expanded="false"]::after {
+  content: "";
+  /* 아이콘은 컴포넌트에서 처리 */
+}
+
+/* 선택된 항목 */
+[aria-selected="true"] {
+  background-color: rgba(14, 165, 233, 0.1);
+}
+
+.dark [aria-selected="true"] {
+  background-color: rgba(56, 189, 248, 0.15);
+}
+
+/* 에러 필드 스타일 */
+[aria-invalid="true"] {
+  border-color: #ef4444 !important;
+}
+
+[aria-invalid="true"]:focus-visible {
+  outline-color: #ef4444;
+}
+
+/* 필수 필드 표시 */
+[aria-required="true"]::after {
+  content: " *";
+  color: #ef4444;
+}

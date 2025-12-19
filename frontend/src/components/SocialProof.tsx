@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-<br/>import { Star, Users, Award, TrendingUp, CheckCircle, Quote } from 'lucide-react';
+import { Star, Users, Award, TrendingUp, CheckCircle, Quote } from 'lucide-react';
 
 /**
  * Social Proof Components
