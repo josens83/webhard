@@ -211,3 +211,103 @@ export function notifyNewRating(
     link: `/files/${fileId}`,
   });
 }
+
+// Message notifications (쪽지 알림)
+export function notifyNewMessage(
+  recipientId: string,
+  senderUsername: string,
+  messageTitle: string
+) {
+  if (!io) return;
+
+  io.to(`user:${recipientId}`).emit('message:new', {
+    senderUsername,
+    title: messageTitle,
+  });
+
+  sendNotificationToUser(recipientId, {
+    type: 'MESSAGE',
+    title: '새 쪽지',
+    message: `${senderUsername}님이 쪽지를 보냈습니다: ${messageTitle}`,
+    link: '/messages',
+  });
+}
+
+// Friend notifications (친구 알림)
+export function notifyFriendRequest(
+  recipientId: string,
+  senderUsername: string
+) {
+  if (!io) return;
+
+  io.to(`user:${recipientId}`).emit('friend:request', {
+    senderUsername,
+  });
+
+  sendNotificationToUser(recipientId, {
+    type: 'FRIEND',
+    title: '친구 요청',
+    message: `${senderUsername}님이 친구 요청을 보냈습니다.`,
+    link: '/friends',
+  });
+}
+
+export function notifyFriendAccepted(
+  recipientId: string,
+  accepterUsername: string
+) {
+  if (!io) return;
+
+  io.to(`user:${recipientId}`).emit('friend:accepted', {
+    accepterUsername,
+  });
+
+  sendNotificationToUser(recipientId, {
+    type: 'FRIEND',
+    title: '친구 수락',
+    message: `${accepterUsername}님이 친구 요청을 수락했습니다.`,
+    link: '/friends',
+  });
+}
+
+// Upload progress notification
+export function notifyUploadProgress(
+  userId: string,
+  fileId: string,
+  progress: number,
+  fileName: string
+) {
+  if (!io) return;
+
+  io.to(`user:${userId}`).emit('upload:progress', {
+    fileId,
+    progress,
+    fileName,
+  });
+}
+
+// Download progress notification
+export function notifyDownloadProgress(
+  userId: string,
+  fileId: string,
+  progress: number,
+  fileName: string
+) {
+  if (!io) return;
+
+  io.to(`user:${userId}`).emit('download:progress', {
+    fileId,
+    progress,
+    fileName,
+  });
+}
+
+// Online status
+export function updateUserOnlineStatus(userId: string, isOnline: boolean) {
+  if (!io) return;
+
+  io.emit('user:status', {
+    userId,
+    isOnline,
+  });
+}

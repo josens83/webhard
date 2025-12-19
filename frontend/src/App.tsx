@@ -20,6 +20,11 @@ import StudentDashboard from './pages/StudentDashboard'
 import MessagesPage from './pages/MessagesPage'
 import FriendsPage from './pages/FriendsPage'
 
+// Additional Pages
+import UserProfilePage from './pages/UserProfilePage'
+import NotificationsPage from './pages/NotificationsPage'
+import PaymentHistoryPage from './pages/PaymentHistoryPage'
+
 function App() {
   return (
     <Routes>
@@ -48,6 +53,19 @@ function App() {
         <Route path="friends" element={
           <ProtectedRoute>
             <FriendsPage />
+          </ProtectedRoute>
+        } />
+
+        {/* User & Account Routes */}
+        <Route path="users/:userId" element={<UserProfilePage />} />
+        <Route path="notifications" element={
+          <ProtectedRoute>
+            <NotificationsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="payment-history" element={
+          <ProtectedRoute>
+            <PaymentHistoryPage />
           </ProtectedRoute>
         } />
 
