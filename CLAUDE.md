@@ -99,3 +99,79 @@ webhard/
 - Message: Real-time chat messages
 - Friendship: User connections
 - Payment: Transaction records
+
+## Design System
+
+### Available UI Components
+Use these existing components instead of creating new ones:
+
+```
+frontend/src/components/ui/
+├── Button.tsx       - Primary action buttons
+├── Card.tsx         - Content containers
+├── Input.tsx        - Text inputs
+├── Modal.tsx        - Dialog/popup windows
+├── Skeleton.tsx     - Loading placeholders
+├── EmptyState.tsx   - Empty data displays
+├── ErrorState.tsx   - Error displays with retry
+├── DataContainer.tsx - Unified state management
+└── Toast/           - Notification system
+```
+
+### Import Paths
+```tsx
+// Correct imports
+import { Button } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
+import { Skeleton } from "@/components/ui/Skeleton"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ErrorState } from "@/components/ui/ErrorState"
+
+// Wrong - do not create new components
+import { Button } from "./Button"
+```
+
+### Color Tokens (Tailwind)
+```
+Background:    bg-background, bg-card, bg-muted
+Text:          text-foreground, text-muted-foreground
+Primary:       bg-primary, text-primary-foreground
+Destructive:   bg-destructive, text-destructive
+Border:        border-border, border-input
+```
+
+### Spacing Guidelines
+- Component gap: `gap-4` or `space-y-4`
+- Section padding: `p-6` or `py-8`
+- Card padding: `p-4` or `p-6`
+
+### Required UI States
+Every data-fetching component MUST implement:
+1. **Loading**: Use Skeleton UI (not Spinner)
+2. **Success**: Display actual data
+3. **Empty**: Icon + message + CTA button
+4. **Error**: Error message + retry button
+
+### Responsive Breakpoints
+```
+Mobile:  default (< 640px)
+Tablet:  sm (640px), md (768px)
+Desktop: lg (1024px), xl (1280px)
+
+// Always mobile-first
+className="w-full sm:w-1/2 lg:w-1/3"
+```
+
+### Accessibility Requirements
+- All images must have meaningful alt text
+- All form inputs must have associated labels
+- Buttons must have clear text or aria-label
+- Focus states must be visible (focus-visible)
+- Color contrast ratio: 4.5:1 minimum
+
+### Prohibited Practices
+- Inline styles (use Tailwind classes)
+- Hardcoded colors (use design tokens)
+- Creating new components when existing ones work
+- Skipping loading/error/empty states
+- Using `!important`
