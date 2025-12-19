@@ -139,11 +139,11 @@ function DefaultEmptyIcon() {
 // 상태 생성 헬퍼 함수
 // ============================================
 
-export const createIdleState = <T>(): DataState<T> => ({ status: 'idle' })
-export const createLoadingState = <T>(): DataState<T> => ({ status: 'loading' })
-export const createSuccessState = <T>(data: T): DataState<T> => ({ status: 'success', data })
-export const createErrorState = <T>(error: Error): DataState<T> => ({ status: 'error', error })
-export const createEmptyState = <T>(): DataState<T> => ({ status: 'empty' })
+export const createIdleState = <T,>(): DataState<T> => ({ status: 'idle' })
+export const createLoadingState = <T,>(): DataState<T> => ({ status: 'loading' })
+export const createSuccessState = <T,>(data: T): DataState<T> => ({ status: 'success', data })
+export const createErrorState = <T,>(error: Error): DataState<T> => ({ status: 'error', error })
+export const createEmptyState = <T,>(): DataState<T> => ({ status: 'empty' })
 
 /**
  * 데이터 페칭 결과를 DataState로 변환
