@@ -44,6 +44,10 @@ import messageRoutes from './routes/message.routes';
 import friendRoutes from './routes/friend.routes';
 import notificationRoutes from './routes/notification.routes';
 
+// Payment Webhooks
+import webhookRoutes from './routes/webhook.routes';
+import searchRoutes from './routes/search.routes';
+
 dotenv.config();
 
 const app: Application = express();
@@ -146,6 +150,12 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/friends', friendRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+// Search Routes (Elasticsearch)
+app.use('/api/search', searchRoutes);
+
+// Payment Webhook Routes (no auth - uses signature verification)
+app.use('/api/webhooks', webhookRoutes);
+
 // Error handling
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -170,6 +180,10 @@ httpServer.listen(PORT, () => {
   console.log(`\n💬 Communication:`);
   console.log(`   ✉️  Messages: /api/messages`);
   console.log(`   👥 Friends: /api/friends`);
+  console.log(`\n💳 Payment Webhooks:`);
+  console.log(`   🔷 Toss: /api/webhooks/toss`);
+  console.log(`   🟢 Iamport: /api/webhooks/iamport`);
+  console.log(`   🟣 Stripe: /api/webhooks/stripe`);
   console.log(`================================\n`);
 });
 

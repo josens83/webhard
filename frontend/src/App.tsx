@@ -24,6 +24,7 @@ import FriendsPage from './pages/FriendsPage'
 import UserProfilePage from './pages/UserProfilePage'
 import NotificationsPage from './pages/NotificationsPage'
 import PaymentHistoryPage from './pages/PaymentHistoryPage'
+import SearchPage from './pages/SearchPage'
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route index element={<HomePage />} />
         <Route path="files" element={<FilesPage />} />
         <Route path="files/:id" element={<FileDetailPage />} />
+        <Route path="search" element={<SearchPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="onboarding" element={<OnboardingFlow />} />
