@@ -1,0 +1,58 @@
+#!/bin/sh
+# ============================================
+# Pre-push Hook - Full Verification
+# ============================================
+# Push 전 전체 프로젝트 검증
+# 클라우드 배포 실패를 사전에 방지
+
+echo "Running pre-push verification..."
+echo "This may take a moment..."
+
+# Backend verification
+echo ""
+echo "[Backend] Type checking..."
+npm run typecheck --prefix backend
+if [ $? -ne 0 ]; then
+  echo "Backend typecheck failed. Push aborted."
+  exit 1
+fi
+
+echo "[Backend] Linting..."
+npm run lint --prefix backend
+if [ $? -ne 0 ]; then
+  echo "Backend lint failed. Push aborted."
+  exit 1
+fi
+
+echo "[Backend] Building..."
+npm run build --prefix backend
+if [ $? -ne 0 ]; then
+  echo "Backend build failed. Push aborted."
+  exit 1
+fi
+
+# Frontend verification
+echo ""
+echo "[Frontend] Type checking..."
+npm run typecheck --prefix frontend
+if [ $? -ne 0 ]; then
+  echo "Frontend typecheck failed. Push aborted."
+  exit 1
+fi
+
+echo "[Frontend] Linting..."
+npm run lint --prefix frontend
+if [ $? -ne 0 ]; then
+  echo "Frontend lint failed. Push aborted."
+  exit 1
+fi
+
+echo "[Frontend] Building..."
+npm run build --prefix frontend
+if [ $? -ne 0 ]; then
+  echo "Frontend build failed. Push aborted."
+  exit 1
+fi
+
+echo ""
+echo "All pre-push checks passed! Proceeding with push..."

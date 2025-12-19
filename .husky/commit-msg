@@ -1,0 +1,45 @@
+#!/bin/sh
+# ============================================
+# Commit Message Hook - Conventional Commits
+# ============================================
+# 커밋 메시지 형식 검증
+# Format: type(scope): description
+# Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build
+
+commit_msg=$(cat "$1")
+
+# Conventional Commits 패턴
+pattern="^(feat|fix|docs|style|refactor|test|chore|perf|ci|build)(\([a-zA-Z0-9_-]+\))?: .{1,100}$"
+
+# Merge 커밋과 Revert 커밋은 허용
+if echo "$commit_msg" | grep -qE "^(Merge|Revert) "; then
+  exit 0
+fi
+
+if ! echo "$commit_msg" | head -1 | grep -qE "$pattern"; then
+  echo ""
+  echo "Invalid commit message format!"
+  echo ""
+  echo "Expected format: type(scope): description"
+  echo ""
+  echo "Valid types:"
+  echo "  feat     - A new feature"
+  echo "  fix      - A bug fix"
+  echo "  docs     - Documentation only changes"
+  echo "  style    - Code style changes (formatting, semicolons, etc)"
+  echo "  refactor - Code change that neither fixes a bug nor adds a feature"
+  echo "  test     - Adding or updating tests"
+  echo "  chore    - Maintenance tasks"
+  echo "  perf     - Performance improvements"
+  echo "  ci       - CI/CD changes"
+  echo "  build    - Build system or dependency changes"
+  echo ""
+  echo "Examples:"
+  echo "  feat(auth): add OAuth2 login"
+  echo "  fix(api): resolve null pointer exception"
+  echo "  docs: update README"
+  echo ""
+  echo "Your message: $commit_msg"
+  echo ""
+  exit 1
+fi
