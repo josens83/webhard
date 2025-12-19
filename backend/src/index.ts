@@ -42,6 +42,9 @@ import abTestingRoutes from './routes/ab-testing.routes';
 // Chat Routes
 import chatRoutes from './routes/chat.routes';
 
+// Health Check Routes
+import healthRoutes from './routes/health.routes';
+
 dotenv.config();
 
 const app: Application = express();
@@ -115,7 +118,10 @@ app.use('/api/', rateLimiter);
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Health check
+// Health check routes (comprehensive)
+app.use('/api/health', healthRoutes);
+
+// Legacy health check endpoint (backward compatibility)
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
@@ -147,13 +153,14 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // Start server with Socket.io
-httpServer.listen(PORT, () => {
+// Bind to 0.0.0.0 for Railway/container compatibility
+httpServer.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`\n🎓 EduVault Educational Platform`);
   console.log(`================================`);
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`🔌 Socket.io: Enabled`);
   console.log(`📚 API Docs: http://localhost:${PORT}/api-docs`);
-  console.log(`🏥 Health: http://localhost:${PORT}/health`);
+  console.log(`🏥 Health: http://localhost:${PORT}/api/health`);
   console.log(`\n🎯 Educational Features:`);
   console.log(`   📖 Courses: /api/courses`);
   console.log(`   🤖 AI Learning: /api/ai-learning`);
