@@ -19,6 +19,12 @@ import StudentDashboard from './pages/StudentDashboard'
 // Chat Page
 import ChatPage from './pages/ChatPage'
 
+// Additional Pages
+import UserProfilePage from './pages/UserProfilePage'
+import NotificationsPage from './pages/NotificationsPage'
+import PaymentHistoryPage from './pages/PaymentHistoryPage'
+import SearchPage from './pages/SearchPage'
+
 function App() {
   return (
     <Routes>
@@ -26,6 +32,7 @@ function App() {
         <Route index element={<HomePage />} />
         <Route path="files" element={<FilesPage />} />
         <Route path="files/:id" element={<FileDetailPage />} />
+        <Route path="search" element={<SearchPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="onboarding" element={<OnboardingFlow />} />
@@ -42,6 +49,19 @@ function App() {
         <Route path="chat" element={
           <ProtectedRoute>
             <ChatPage />
+          </ProtectedRoute>
+        } />
+
+        {/* User & Account Routes */}
+        <Route path="users/:userId" element={<UserProfilePage />} />
+        <Route path="notifications" element={
+          <ProtectedRoute>
+            <NotificationsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="payment-history" element={
+          <ProtectedRoute>
+            <PaymentHistoryPage />
           </ProtectedRoute>
         } />
 

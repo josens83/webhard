@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import { createServer } from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -11,6 +12,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFoundHandler';
 import { rateLimiter } from './middleware/rateLimiter';
+import { initializeSocket } from './services/socket.service';
 
 // World-class Optimization Services
 import { PerformanceMonitoringService, performanceMiddleware } from './services/performance-monitoring.service';
@@ -43,7 +45,11 @@ import chatRoutes from './routes/chat.routes';
 dotenv.config();
 
 const app: Application = express();
+const httpServer = createServer(app);
 const PORT = process.env.PORT || 4000;
+
+// Initialize Socket.io
+const io = initializeSocket(httpServer);
 
 // Initialize world-class optimization services
 const performanceMonitor = new PerformanceMonitoringService();
@@ -52,7 +58,7 @@ const abTestingService = new ABTestingService();
 const freemiumService = new FreemiumOptimizationService();
 
 // Export for use in routes
-export { performanceMonitor, analyticsService, abTestingService, freemiumService, EduVaultExperiments };
+export { performanceMonitor, analyticsService, abTestingService, freemiumService, EduVaultExperiments, io, httpServer };
 
 // Swagger 설정
 const swaggerOptions = {
@@ -140,11 +146,12 @@ app.use('/api/chat', chatRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
+// Start server with Socket.io
+httpServer.listen(PORT, () => {
   console.log(`\n🎓 EduVault Educational Platform`);
   console.log(`================================`);
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🔌 Socket.io: Enabled`);
   console.log(`📚 API Docs: http://localhost:${PORT}/api-docs`);
   console.log(`🏥 Health: http://localhost:${PORT}/health`);
   console.log(`\n🎯 Educational Features:`);
