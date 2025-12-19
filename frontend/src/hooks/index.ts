@@ -20,3 +20,13 @@ export {
   useTypeahead,
   srOnly,
 } from './useAccessibility'
+
+// Performance Hooks
+export {
+  useWebVitals,
+  useRenderTime,
+  useDelayedLoading,
+  usePrefetch,
+  useDeferredComputation,
+  useImagePreload,
+} from './usePerformance'
