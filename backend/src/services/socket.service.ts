@@ -39,7 +39,7 @@ export function initializeSocket(httpServer: HttpServer) {
     }
   });
 
-  io.on('connection', (socket: Socket) => {
+  io.on('connection', async (socket: Socket) => {
     const user = socket.data.user;
     console.log(`User connected: ${user.username} (${user.id})`);
 
@@ -49,6 +49,25 @@ export function initializeSocket(httpServer: HttpServer) {
     // Join admin room if admin
     if (user.isAdmin) {
       socket.join('admin');
+    }
+
+    // 사용자가 참여 중인 모든 채팅방에 자동 조인
+    try {
+      const chatParticipants = await prisma.chatParticipant.findMany({
+        where: {
+          userId: user.id,
+          isActive: true,
+        },
+        select: { chatRoomId: true },
+      });
+
+      chatParticipants.forEach((participant) => {
+        socket.join(`chat:${participant.chatRoomId}`);
+      });
+
+      console.log(`User ${user.username} joined ${chatParticipants.length} chat rooms`);
+    } catch (error) {
+      console.error('Error joining chat rooms:', error);
     }
 
     // Handle file upload progress
@@ -61,7 +80,93 @@ export function initializeSocket(httpServer: HttpServer) {
       socket.emit('download:progress', data);
     });
 
-    // Handle typing indicator
+    // ============================================
+    // 채팅 관련 이벤트 핸들러
+    // ============================================
+
+    // 채팅방 입장
+    socket.on('chat:join', async (roomId: string) => {
+      try {
+        // 사용자가 채팅방 참가자인지 확인
+        const participant = await prisma.chatParticipant.findFirst({
+          where: {
+            chatRoomId: roomId,
+            userId: user.id,
+            isActive: true,
+          },
+        });
+
+        if (participant) {
+          socket.join(`chat:${roomId}`);
+          console.log(`User ${user.username} joined chat room: ${roomId}`);
+
+          // 다른 참가자들에게 온라인 상태 알림
+          socket.to(`chat:${roomId}`).emit('user:online', {
+            userId: user.id,
+            username: user.username,
+            roomId,
+          });
+        }
+      } catch (error) {
+        console.error('Error joining chat room:', error);
+      }
+    });
+
+    // 채팅방 퇴장
+    socket.on('chat:leave', (roomId: string) => {
+      socket.leave(`chat:${roomId}`);
+      console.log(`User ${user.username} left chat room: ${roomId}`);
+
+      // 다른 참가자들에게 오프라인 상태 알림
+      socket.to(`chat:${roomId}`).emit('user:offline', {
+        userId: user.id,
+        roomId,
+      });
+    });
+
+    // 타이핑 시작
+    socket.on('chat:typing:start', (roomId: string) => {
+      socket.to(`chat:${roomId}`).emit('typing:start', {
+        userId: user.id,
+        username: user.username,
+        roomId,
+      });
+    });
+
+    // 타이핑 종료
+    socket.on('chat:typing:stop', (roomId: string) => {
+      socket.to(`chat:${roomId}`).emit('typing:stop', {
+        userId: user.id,
+        roomId,
+      });
+    });
+
+    // 메시지 읽음 처리
+    socket.on('chat:read', async (data: { roomId: string }) => {
+      try {
+        await prisma.chatParticipant.updateMany({
+          where: {
+            chatRoomId: data.roomId,
+            userId: user.id,
+            isActive: true,
+          },
+          data: {
+            lastReadAt: new Date(),
+            unreadCount: 0,
+          },
+        });
+
+        socket.to(`chat:${data.roomId}`).emit('messages:read', {
+          roomId: data.roomId,
+          userId: user.id,
+          readAt: new Date(),
+        });
+      } catch (error) {
+        console.error('Error marking messages as read:', error);
+      }
+    });
+
+    // 기존 타이핑 인디케이터 (하위 호환성)
     socket.on('typing:start', (data) => {
       socket.to(data.room).emit('typing:start', {
         userId: user.id,
@@ -78,6 +183,15 @@ export function initializeSocket(httpServer: HttpServer) {
     // Handle disconnect
     socket.on('disconnect', () => {
       console.log(`User disconnected: ${user.username}`);
+
+      // 모든 채팅방에 오프라인 상태 알림
+      socket.rooms.forEach((room) => {
+        if (room.startsWith('chat:')) {
+          socket.to(room).emit('user:offline', {
+            userId: user.id,
+          });
+        }
+      });
     });
   });
 
