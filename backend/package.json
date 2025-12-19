@@ -3,9 +3,13 @@
   "version": "2.0.0",
   "description": "EduVault Educational Platform Backend API",
   "main": "dist/index.js",
+  "engines": {
+    "node": ">=18.0.0 <21.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
-    "build": "tsc",
+    "build": "npm run prisma:generate && tsc",
     "start": "node dist/index.js",
     "migrate": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
@@ -14,7 +18,13 @@
     "seed": "ts-node prisma/seed.ts",
     "test": "jest",
     "lint": "eslint src --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\""
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
+    "verify": "npm run typecheck && npm run lint && npm run build",
+    "preinstall": "npx only-allow npm",
+    "postinstall": "prisma generate"
   },
   "keywords": [
     "education",
@@ -111,6 +121,7 @@
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "eslint": "^8.56.0",
+    "eslint-plugin-import": "^2.29.1",
     "jest": "^29.7.0",
     "nodemon": "^3.0.2",
     "prettier": "^3.1.1",
