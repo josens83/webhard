@@ -1,0 +1,43 @@
+{
+  "name": "eduvault-monorepo",
+  "version": "2.0.0",
+  "private": true,
+  "description": "EduVault Educational Platform - Monorepo",
+  "engines": {
+    "node": ">=18.0.0 <21.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "preinstall": "npx only-allow npm",
+    "backend:dev": "npm run dev --prefix backend",
+    "backend:build": "npm run build --prefix backend",
+    "backend:typecheck": "npm run typecheck --prefix backend",
+    "backend:lint": "npm run lint --prefix backend",
+    "frontend:dev": "npm run dev --prefix frontend",
+    "frontend:build": "npm run build --prefix frontend",
+    "frontend:typecheck": "npm run typecheck --prefix frontend",
+    "frontend:lint": "npm run lint --prefix frontend",
+    "typecheck": "npm run backend:typecheck && npm run frontend:typecheck",
+    "lint": "npm run backend:lint && npm run frontend:lint",
+    "build": "npm run backend:build && npm run frontend:build",
+    "verify": "npm run typecheck && npm run lint && npm run build"
+  },
+  "devDependencies": {
+    "husky": "^9.0.0",
+    "lint-staged": "^15.2.0"
+  },
+  "lint-staged": {
+    "backend/**/*.{ts,tsx}": [
+      "npm run lint --prefix backend -- --fix",
+      "npm run typecheck --prefix backend"
+    ],
+    "frontend/**/*.{ts,tsx}": [
+      "npm run lint --prefix frontend -- --fix",
+      "npm run typecheck --prefix frontend"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

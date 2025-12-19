@@ -1,0 +1,17 @@
+#!/bin/sh
+# ============================================
+# Pre-commit Hook - lint-staged 실행
+# ============================================
+# Staged 파일만 대상으로 lint와 typecheck 수행
+# 에러 발생 시 커밋 중단
+
+echo "Running pre-commit checks..."
+
+npx lint-staged
+
+if [ $? -ne 0 ]; then
+  echo "Pre-commit checks failed. Please fix the errors and try again."
+  exit 1
+fi
+
+echo "Pre-commit checks passed!"

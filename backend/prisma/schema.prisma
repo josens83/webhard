@@ -1,7 +1,10 @@
 // Prisma Schema for EduVault - Educational Content Platform
 
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  // Pure JavaScript 모드 - Serverless 환경 최적화 (바이너리 의존성 제거)
+  // Prisma 5.16.0+ 필요
+  // engineType = "client"
 }
 
 datasource db {

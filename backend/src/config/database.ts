@@ -1,10 +1,34 @@
 import { PrismaClient } from '@prisma/client';
 import { createClient } from 'redis';
 
-// Prisma Client
-export const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-});
+// ============================================
+// Prisma Singleton Pattern for Serverless
+// ============================================
+// Serverless 환경(Vercel, AWS Lambda 등)에서 Connection Pool 고갈 방지
+// Hot Reload 시에도 새 인스턴스 생성 방지
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+// Prisma Client with optimized settings
+const prismaClientSingleton = () => {
+  return new PrismaClient({
+    log: process.env.NODE_ENV === 'development'
+      ? ['query', 'error', 'warn']
+      : ['error'],
+    // Connection Pool 설정 (schema.prisma의 datasource와 함께 작동)
+    // PgBouncer 사용 시 transaction 모드 권장
+  });
+};
+
+// Singleton 인스턴스 생성 또는 재사용
+export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
+
+// 개발 환경에서만 global에 저장 (프로덕션에서는 불필요)
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
 
 // Redis Client
 export const redisClient = createClient({
